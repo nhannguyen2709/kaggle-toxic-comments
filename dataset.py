@@ -37,36 +37,3 @@ class ToxicCommentsDataset:
         test_word_index = tokenizer.word_index
         print('Found %s unique tokens in test corpus.' % len(test_word_index))
         return x_train, x_test
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
