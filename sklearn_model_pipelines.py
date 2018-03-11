@@ -14,7 +14,6 @@ from dataset import ToxicCommentsDataset
 
 parser = argparse.ArgumentParser(description='Scikit-learn text vectorizer and classifier pipelines')
 parser.add_argument('--data_dir', default='', type=str, metavar='PATH', help='path to data (default: none)')
-parser.add_argument('--output_dir', default='', type=str, metavar='PATH', help='path to model outputs (default: none)')
 parser.add_argument('--train_csv_file', default='train.csv', metavar='PATH', help='train data filename')
 parser.add_argument('--test_csv_file', default='test.csv', metavar='PATH', help='test data filename')
 parser.add_argument('--num_iter', default=50, type=int, metavar='N', help='number of hyperparameter settings that are sampled')
@@ -36,10 +35,9 @@ def main():
                                 arg.num_iter, arg.scoring, arg.num_jobs, 
                                 arg.kfold, arg.num_classes)
     xgb_outputs = trial.tf_idf_xgboost_pipeline(silent=False)
+    save_outputs(xgb_outputs, arg.data_dir, arg.train_csv_file, 'xgb_outputs.csv') # save the outputs
     rf_outputs = trial.tf_idf_random_forest_pipeline(verbose=1)
-    # save the outputs
-    save_outputs(xgb_outputs, arg.data_dir, arg.output_dir, arg.train_csv_file, arg.test_csv_file)
-    save_outputs(rf_outputs, arg.data_dir, arg.output_dir, arg.train_csv_file, arg.test_csv_file)
+    save_outputs(rf_outputs, arg.data_dir, arg.train_csv_file, 'rf_outputs.csv') # save the outputs
 
 class ScikitLearnPipeline:
     """Build pipelines of text transformer and classifiers using RandomizedCV() to choose the best hyperparameters."""
@@ -79,6 +77,8 @@ class ScikitLearnPipeline:
             randomized.fit(self.train_texts, self.y_train[:, i])
             y_train_pred = randomized.predict_proba(self.train_texts) 
             y_test_pred = randomized.predict_proba(self.test_texts)
+            best_params_dict = randomized.best_params_
+            print('Best hyperparameters set found for label {}: {}'.format(i, best_params_dict))
             model_outputs[:num_train_samples, i] = y_train_pred[:, 1]
             model_outputs[num_train_samples:, i] = y_test_pred[:, 1]
         return model_outputs
@@ -112,15 +112,17 @@ class ScikitLearnPipeline:
             randomized.fit(self.train_texts, self.y_train[:, i])
             y_train_pred = randomized.predict_proba(self.train_texts) 
             y_test_pred = randomized.predict_proba(self.test_texts)
+            best_params_dict = randomized.best_params_
+            print('Best hyperparameters set found for label {}: {}'.format(i, best_params_dict))
             model_outputs[:num_train_samples, i] = y_train_pred[:, 1]
             model_outputs[num_train_samples:, i] = y_test_pred[:, 1]
         return model_outputs
 
-def save_outputs(model_outputs, data_dir, output_dir, train_csv_file, output_csv_file):
+def save_outputs(model_outputs, data_dir, train_csv_file, output_csv_file):
     classes = pd.read_csv(os.path.join(data_dir, train_csv_file)).columns[2:]
     model_outputs_df = pd.DataFrame(model_outputs, columns=classes)
-    model_outputs_df.to_csv(os.path.join(output_dir, output_csv_file), index=False)
-    print('Finished exporting the model outputs to a csv file.')
-    
+    model_outputs_df.to_csv(output_csv_file, index=False)
+    print('Finished exporting the model outputs to a csv file.')    
+
 if __name__=='__main__':
     main()
