@@ -6,6 +6,9 @@ from keras.callbacks import Callback
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import roc_auc_score
+
 
 class ToxicCommentsDataset:
     """Load and process the dataset for scikit-learn and keras models."""
