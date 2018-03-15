@@ -5,11 +5,9 @@ import os
 
 from utils import ToxicCommentsDataset, RocAucEvaluation
 
-
 # from xgboost import XGBClassifier
 # from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from sklearn.metrics import roc_auc_score
 
 from keras.layers import Dense,Input,LSTM,Bidirectional,Activation,Conv1D,GRU
@@ -22,8 +20,8 @@ from keras.callbacks import EarlyStopping,ModelCheckpoint
 from keras.models import Model
 from keras.optimizers import Adam
 
+# laptop_data_dir = '/mnt/d/kaggle-toxic-comments/data'
 desktop_data_dir = '/home/nhan/Downloads/toxic_comments'
-laptop_data_dir = '/mnt/d/kaggle-toxic-comments/data'
 embedding_dir = '/home/nhan/Downloads/word_embeddings/'
 
 toxic_comments_dataset = ToxicCommentsDataset(desktop_data_dir,
