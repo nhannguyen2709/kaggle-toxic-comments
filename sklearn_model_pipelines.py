@@ -3,13 +3,13 @@ import pandas as pd
 import os
 import argparse 
 
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import make_pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from xgboost import XGBClassifier
 
-from dataset import ToxicCommentsDataset
+from utils import ToxicCommentsDataset
 
 
 parser = argparse.ArgumentParser(description='Scikit-learn text vectorizer and classifier pipelines')

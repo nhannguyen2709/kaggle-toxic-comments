@@ -1,6 +1,4 @@
-import h5py
 import numpy as np
-import pandas as pd
 import os
 
 from utils import ToxicCommentsDataset, RocAucEvaluation
@@ -8,14 +6,10 @@ from utils import ToxicCommentsDataset, RocAucEvaluation
 # from xgboost import XGBClassifier
 # from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score
 
-from keras.layers import Dense,Input,LSTM,Bidirectional,Activation,Conv1D,GRU
-from keras.callbacks import Callback
-from keras.layers import Dropout,Embedding,GlobalMaxPooling1D, MaxPooling1D, Add, Flatten
-from keras.preprocessing import text, sequence
+from keras.layers import Dense,Input,Bidirectional,Conv1D,GRU
+from keras.layers import Embedding
 from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, concatenate, SpatialDropout1D
-from keras import initializers, regularizers, constraints, optimizers, layers, callbacks
 from keras.callbacks import EarlyStopping,ModelCheckpoint
 from keras.models import Model
 from keras.optimizers import Adam
@@ -79,14 +73,16 @@ max_pool = GlobalMaxPooling1D()(x)
 x = concatenate([avg_pool, max_pool])
 outputs = Dense(6, activation="sigmoid")(x)
 model = Model(sequence_input, outputs)
+
+filepath = "weights_base.best.hdf5"
+model.load(filepath=filepath)
+
 model.compile(loss='binary_crossentropy',optimizer=Adam(lr=1e-3),metrics=['accuracy'])
 model.summary()
-
 batch_size = 256
 epochs = 15
 x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, train_size=0.9, random_state=233)
 
-filepath = "weights_base.best.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 early = EarlyStopping(monitor="val_acc", mode="max", patience=5)
 roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval = 1)
