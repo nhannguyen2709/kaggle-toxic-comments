@@ -14,15 +14,19 @@ toxic_comments_dataset = ToxicCommentsDataset(desktop_data_dir,
 _, y_train, _ = toxic_comments_dataset.get_texts_and_train_labels()
 new_x_train = np.loadtxt('new_x_train.out', delimiter=',')
 new_x_test = np.loadtxt('new_x_test.out', delimiter=',')
+
 num_train_samples = len(new_x_train)
-num_test_samples = len(new_x_train)
+num_test_samples = len(new_x_test)
 num_classes = 6
-num_iter = 100
+num_iter = 75
 scoring = 'roc_auc'
 num_jobs = 4
 kfold = 3
+
 model_outputs = np.zeros((num_train_samples + num_test_samples, num_classes))
-xgbclassifier = XGBClassifier()
+assert model_outputs.shape[0] == 312735
+
+xgbclassifier = XGBClassifier(silent=False)
 for i in range(num_classes): # iterate through labels
     param_grid = {'n_estimators': np.array([5, 10, 15, 20, 25]),
                   'max_depth': np.array([5,10,15,20,25]),
