@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from tqdm import tqdm
 
 from keras.layers import Dense, Input, Bidirectional, Conv1D, GRU
 from keras.layers import Embedding
@@ -15,7 +16,7 @@ def create_embeddings(embedding_dir, embedding_filenames,
         if filename.endswith('.txt'):          
             embedding_index = {}
             with open(os.path.join(embedding_dir, filename), encoding='utf8') as f:
-                for line in f:
+                for line in tqdm(f):
                     values = line.rstrip().rsplit(' ')
                     word = values[0]
                     coefs = np.asarray(values[1:], dtype='float32')
@@ -25,7 +26,7 @@ def create_embeddings(embedding_dir, embedding_filenames,
         else:
             embedding_index = {}
             with open(os.path.join(embedding_dir, filename), mode='rb') as f:
-                for line in f:
+                for line in tqdm(f):
                     values = line.rstrip().rsplit(' ')
                     word = values[0]
                     coefs = np.asarray(values[1:], dtype='float32')

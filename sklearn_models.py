@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import os
 import argparse 
-from tqdm import tqdm
 
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -74,7 +73,7 @@ class ScikitLearnClassifiers:
                       'min_samples_leaf': np.array([1, 2, 4, 6, 8, 10]),
                       'min_samples_split': np.arange(2, 20 + 1),
                       'max_features': ['sqrt', 'log2']}
-        for i in tqdm(range(self.num_classes)):
+        for i in range(self.num_classes):
             etc = ExtraTreesClassifier(verbose=verbose)              
             randomized = RandomizedSearchCV(etc, param_distributions=param_grid, 
                                             n_iter=self.num_iter, scoring=self.scoring,
@@ -103,7 +102,7 @@ class ScikitLearnClassifiers:
         num_train_samples = len(self.x_train)
         num_test_samples = len(self.x_test)
         model_outputs = np.zeros((num_train_samples + num_test_samples, self.num_classes))
-        for i in tqdm(range(self.num_classes)): # iterate through labels
+        for i in range(self.num_classes): # iterate through labels
             xgb = XGBClassifier(silent=silent)
             param_grid = {'n_estimators': np.array([5, 10, 15, 20, 25]),
                           'max_depth': np.array([5,10,15,20,25]),
