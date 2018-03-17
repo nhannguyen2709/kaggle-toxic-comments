@@ -17,6 +17,11 @@ parser.add_argument('--train_csv_file', default='train.csv', type=str, metavar='
 parser.add_argument('--test_csv_file', default='test.csv', type=str, metavar='PATH', help='test data filename')
 parser.add_argument('--new_x_train_file', default='new_x_train.out', type=str, metavar='PATH', help='processed train data filename')
 parser.add_argument('--new_x_test_file', default='new_x_test.out', type=str, metavar='PATH', help='processed test data filename')
+parser.add_argument('--spatial_dropout1d_rate', default=0.2, type=float, help='dropout rate of the SpatialDropout1D layer')
+parser.add_argument('--hidden_dim', default=256, type=int, metavar='N', help='number of hidden units of the GRU layer')
+parser.add_argument('--dropout_rate', default=0.2, type=float, help='dropout rate of the GRU layer')
+parser.add_argument('--recurrent_dropout_rate', default=0.2, type=float, help='recurrent dropout rate of the GRU layer')
+parser.add_argument('--num_conv1d_filters', default=128, type=int, metavar='N', help='number of filters of the Conv1D layer')
 parser.add_argument('--max_words', default=100000, type=int, metavar='N', help='maximum size of the vocabulary')
 parser.add_argument('--maxlen', default=150, type=int, metavar='N', help='maximum timestep of a sample')
 parser.add_argument('--train_size', default=0.9, type=float, help='the proportion of the dataset to include in the training set')
@@ -61,8 +66,13 @@ def main1():
  
     bidirectionalgru = BidirectionalGRU(input_shape=(arg.maxlen,), 
                                         list_embeddings_matrix=list_embeddings_matrix,
+                                        num_classes=arg.num_classes,
                                         weights_filepath=arg.weights_filepath,
-                                        num_classes=arg.num_classes)
+                                        spatial_dropout1d_rate=arg.spatial_dropout1d_rate,
+                                        hidden_dim=arg.hidden_dim,
+                                        dropout_rate=arg.dropout_rate,
+                                        recurrent_dropout_rate=arg.recurrent_dropout_rate,
+                                        num_conv1d_filters=arg.num_conv1d_filters)
     bidirectionalgru.build_model()
     bidirectionalgru.reload_weights_from_checkpoint()
     bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
@@ -100,8 +110,13 @@ def main2():
     # build the model
     bidirectionalgru = BidirectionalGRU(input_shape=(arg.maxlen,),
                                         list_embeddings_matrix=list_embeddings_matrix,
+                                        num_classes=arg.num_classes,
                                         weights_filepath=arg.weights_filepath,
-                                        num_classes=arg.num_classes)
+                                        spatial_dropout1d_rate=arg.spatial_dropout1d_rate,
+                                        hidden_dim=arg.hidden_dim,
+                                        dropout_rate=arg.dropout_rate,
+                                        recurrent_dropout_rate=arg.recurrent_dropout_rate,
+                                        num_conv1d_filters=arg.num_conv1d_filters)
     bidirectionalgru.build_model()
     
     # extract features

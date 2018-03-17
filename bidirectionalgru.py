@@ -55,13 +55,23 @@ def create_embeddings(embedding_dir, embedding_filenames,
 class BidirectionalGRU:
     def __init__(self, 
                  input_shape, 
-                 list_embeddings_matrix, 
-                 weights_filepath, 
-                 num_classes):
+                 list_embeddings_matrix,
+                 num_classes,
+                 weights_filepath,
+                 spatial_dropout1d_rate,
+                 hidden_dim,
+                 dropout_rate,
+                 recurrent_dropout_rate,
+                 num_conv1d_filters):
         self.input_shape = input_shape
         self.list_embeddings_matrix = list_embeddings_matrix
         self.num_classes = num_classes
         self.weights_filepath = weights_filepath
+        self.spatial_dropout1d_rate = spatial_dropout1d_rate
+        self.hidden_dim = hidden_dim
+        self.dropout_rate = dropout_rate
+        self.recurrent_dropout_rate = recurrent_dropout_rate
+        self.num_conv1d_filters = num_conv1d_filters
 
     def build_model(self, verbose=True):
         list_x_embedded = []
@@ -77,9 +87,10 @@ class BidirectionalGRU:
             list_x_embedded.append(x_embedded)
         x = concatenate(list_x_embedded)
 
-        x = SpatialDropout1D(0.2)(x)
-        x = Bidirectional(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
-        x = Conv1D(128, kernel_size=3, padding='valid', kernel_initializer='glorot_uniform')(x)
+        x = SpatialDropout1D(self.spatial_dropout1d_rate)(x)
+        x = Bidirectional(GRU(self.hidden_dim, return_sequences=True, 
+                              dropout=self.dropout_rate, recurrent_dropout=self.recurrent_dropout_rate))(x)
+        x = Conv1D(self.num_conv1d_filters, kernel_size=3, padding='valid', kernel_initializer='glorot_uniform')(x)
         avg_pool = GlobalAveragePooling1D()(x)
         max_pool = GlobalMaxPooling1D()(x)
         x = concatenate([avg_pool, max_pool])
