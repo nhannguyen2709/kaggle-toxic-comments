@@ -115,7 +115,7 @@ class BidirectionalGRU:
                        callbacks=callbacks_list, verbose=1)
 
     def reload_weights_from_checkpoint(self):
-        self.model.load(filepath=self.weights_filepath)
+        self.model.load_weights(filepath=self.weights_filepath)
 
     def extract_features(self, x_train, x_test, verbose=True): 
         feature_extractor = Model(self.sequence_input, self.model.layers[-2].output)
