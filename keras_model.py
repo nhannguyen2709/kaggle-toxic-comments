@@ -37,7 +37,7 @@ def main1():
                                                   arg.train_csv_file,
                                                   arg.test_csv_file)
     _, y_train, _ = toxic_comments_dataset.get_texts_and_train_labels()
-    x_train, x_test, word_index = toxic_comments_dataset.tokenize_by_keras(max_words=arg.max_words, 
+    x_train, _, word_index = toxic_comments_dataset.tokenize_by_keras(max_words=arg.max_words, 
                                                                            maxlen=arg.maxlen)
 
     # obtain the pre-trained word embeddings
