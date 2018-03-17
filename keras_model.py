@@ -3,7 +3,7 @@ import os
 import argparse
 
 from sklearn.model_selection import train_test_split
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 from utils import ToxicCommentsDataset, RocAucEvaluation
 from bidirectionalgru import create_embeddings, BidirectionalGRU
@@ -31,7 +31,7 @@ def main1():
     print(arg)
     
     embedding_filenames = sorted(os.listdir(arg.embedding_dir))
-    embedding_sizes = [300, 200] # 
+    embedding_sizes = [100, 200, 50, 300] 
     # prepare the dataset
     toxic_comments_dataset = ToxicCommentsDataset(arg.data_dir,
                                                   arg.train_csv_file,
@@ -52,16 +52,19 @@ def main1():
                                                                     train_size=arg.train_size, random_state=233)
 
     # create callbacks
-    checkpoint = ModelCheckpoint(arg.weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    checkpoint = ModelCheckpoint('weights2.best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     early = EarlyStopping(monitor="val_acc", mode="max", patience=5)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                                  patience=5, min_lr=0.001)
     roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval=1)
-    callbacks_list = [roc_auc,checkpoint, early]
+    callbacks_list = [roc_auc, checkpoint, early, reduce_lr]
  
     bidirectionalgru = BidirectionalGRU(input_shape=(arg.maxlen,), 
                                         list_embeddings_matrix=list_embeddings_matrix,
                                         weights_filepath=arg.weights_filepath,
                                         num_classes=arg.num_classes)
     bidirectionalgru.build_model()
+    bidirectionalgru.reload_weights_from_checkpoint()
     bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
                                        x_validation=x_validation, y_validation=y_validation,
                                        learning_rate=arg.learning_rate, batch_size=arg.batch_size,
@@ -79,7 +82,7 @@ def main2():
     print(arg)
 
     embedding_filenames = sorted(os.listdir(arg.embedding_dir))
-    embedding_sizes = [300, 200]
+    embedding_sizes = [100, 200, 50, 300]
     # prepare the dataset
     toxic_comments_dataset = ToxicCommentsDataset(arg.data_dir,
                                                   arg.train_csv_file,
@@ -111,4 +114,4 @@ def main2():
 
 if __name__=='__main__':
     main1()
-    # main2()
+    main2()
