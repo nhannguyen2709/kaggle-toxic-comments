@@ -3,8 +3,7 @@ import numpy as np
 
 from keras.layers import Dense, Input, Bidirectional, Conv1D, GRU
 from keras.layers import Embedding
-from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, Concatenate, SpatialDropout1D
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, concatenate, SpatialDropout1D
 from keras.models import Model 
 from keras.optimizers import Adam
 
@@ -75,14 +74,14 @@ class BidirectionalGRU:
             x_embedded = Embedding(max_words, embedding_size, 
                                    weights=[embedding_matrix], trainable=False)(self.sequence_input)
             list_x_embedded.append(x_embedded)
-        x = Concatenate(list_x_embedded)
+        x = concatenate(list_x_embedded)
 
-        x = SpatialDropout1D(0.2)
+        x = SpatialDropout1D(0.2)(x)
         x = Bidirectional(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
         x = Conv1D(128, kernel_size=3, padding='valid', kernel_initializer='glorot_uniform')(x)
         avg_pool = GlobalAveragePooling1D()(x)
         max_pool = GlobalMaxPooling1D()(x)
-        x = Concatenate([avg_pool, max_pool])
+        x = concatenate([avg_pool, max_pool])
         outputs = Dense(self.num_classes, activation='sigmoid')(x)
         self.model = Model(self.sequence_input, outputs)
         if verbose:
