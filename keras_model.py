@@ -73,7 +73,6 @@ def main1():
                                                               learning_rate=1e-5, batch_size=arg.batch_size,
                                                               epochs=arg.epochs, callbacks_list=callbacks_list)
 
-
 def main2():
     global arg
     arg = parser.parse_args()
