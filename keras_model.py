@@ -1,18 +1,8 @@
 import numpy as np
 import os
 
-from utils import ToxicCommentsDataset, RocAucEvaluation
-
-# from xgboost import XGBClassifier
-# from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
-
-from keras.layers import Dense,Input,Bidirectional,Conv1D,GRU
-from keras.layers import Embedding
-from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, concatenate, SpatialDropout1D
-from keras.callbacks import EarlyStopping,ModelCheckpoint
-from keras.models import Model
-from keras.optimizers import Adam
+from utils import ToxicCommentsDataset, RocAucEvaluation
 
 # laptop_data_dir = '/mnt/d/kaggle-toxic-comments/data'
 desktop_data_dir = '/home/nhan/Downloads/toxic_comments'
