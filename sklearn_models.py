@@ -40,8 +40,8 @@ def main():
                                    arg.kfold, arg.num_classes)
     xgb_outputs = trial.xgbclassifier(silent=False)
     save_outputs(xgb_outputs, arg.data_dir, arg.output_dir, arg.train_csv_file, 'xgb_outputs.csv') # save the outputs
-    rf_outputs = trial.extra_trees_classifier(verbose=1)
-    save_outputs(rf_outputs, arg.data_dir, arg.output_dir, arg.train_csv_file, 'rf_outputs.csv') # save the outputs
+    etc_outputs = trial.extra_trees_classifier(verbose=1)
+    save_outputs(etc_outputs, arg.data_dir, arg.output_dir, arg.train_csv_file, 'etc_outputs.csv') # save the outputs
 
 class ScikitLearnClassifiers:
     """Build pipelines of text transformer and classifiers using RandomizedCV() to choose the best hyperparameters."""
