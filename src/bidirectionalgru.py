@@ -125,9 +125,12 @@ class BidirectionalGRU:
                        validation_data=(x_validation, y_validation),
                        callbacks=callbacks_list, verbose=1)
 
+    def predict_on_test_data(self, x_test):
+        return self.model.predict(x_test, verbose=1)
+
     def reload_weights_from_checkpoint(self):
         self.model.load_weights(filepath=self.weights_filepath)
-        self.model.compile(loss='mse', optimizer='sgd') # dummy model compil
+        self.model.compile(loss='mse', optimizer='sgd') # dummy model compile
         
     def extract_features(self, x_train, x_test, verbose=True): 
         feature_extractor = Model(self.sequence_input, self.model.layers[-2].output)

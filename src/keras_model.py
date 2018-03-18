@@ -5,7 +5,7 @@ import argparse
 from sklearn.model_selection import train_test_split
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
-from utils import ToxicCommentsDataset, RocAucEvaluation
+from utils import save_outputs, ToxicCommentsDataset, RocAucEvaluation
 from bidirectionalgru import create_embeddings, BidirectionalGRU
 
 parser = argparse.ArgumentParser(description='Bidirectional Gated Recurrent Unit network')
@@ -43,7 +43,7 @@ def main1():
                                                   arg.train_csv_file,
                                                   arg.test_csv_file)
     _, y_train, _ = toxic_comments_dataset.get_texts_and_train_labels()
-    x_train, _, word_index = toxic_comments_dataset.tokenize_by_keras(max_words=arg.max_words, 
+    x_train, x_test, word_index = toxic_comments_dataset.tokenize_by_keras(max_words=arg.max_words, 
                                                                            maxlen=arg.maxlen)
 
     # obtain the pre-trained word embeddings
@@ -86,7 +86,9 @@ def main1():
                                                               x_validation=x_validation, y_validation=y_validation,
                                                               learning_rate=1e-5, batch_size=arg.batch_size,
                                                               epochs=arg.epochs, callbacks_list=callbacks_list)
-
+    bigru_preds = bidirectionalgru.predict_on_test_data(x_test=x_test)
+    save_outputs(bigru_preds, arg.data_dir, arg.output_dir,
+                 arg.train_csv_file, 'bigru_outputs.csv')  # save the outputs
 def main2():
     global arg
     arg = parser.parse_args()

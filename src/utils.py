@@ -9,6 +9,13 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import roc_auc_score
 
 
+def save_outputs(model_outputs, data_dir, output_dir, train_csv_file, output_csv_file):
+    classes = pd.read_csv(os.path.join(data_dir, train_csv_file)).columns[2:]
+    model_outputs_df = pd.DataFrame(model_outputs, columns=classes)
+    model_outputs_df.to_csv(os.path.join(
+        output_dir, output_csv_file), index=False)
+    print('Finished exporting the model outputs to a csv file.')
+
 class ToxicCommentsDataset:
     """Load and process the dataset for scikit-learn and keras models."""
     def __init__(self, data_dir, train_csv_file, test_csv_file):

@@ -7,7 +7,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from xgboost import XGBClassifier
 
-from utils import ToxicCommentsDataset
+from utils import ToxicCommentsDataset, save_outputs
 
 
 parser = argparse.ArgumentParser(description='Scikit-learn text vectorizer and classifier pipelines')
@@ -124,12 +124,6 @@ class ScikitLearnClassifiers:
             model_outputs[:num_train_samples, i] = y_train_pred[:, 1]
             model_outputs[num_train_samples:, i] = y_test_pred[:, 1]
         return model_outputs
-
-def save_outputs(model_outputs, data_dir, output_dir, train_csv_file, output_csv_file):
-    classes = pd.read_csv(os.path.join(data_dir, train_csv_file)).columns[2:]
-    model_outputs_df = pd.DataFrame(model_outputs, columns=classes)
-    model_outputs_df.to_csv(os.path.join(output_dir, output_csv_file), index=False)
-    print('Finished exporting the model outputs to a csv file.')    
 
 if __name__=='__main__':
     main()
