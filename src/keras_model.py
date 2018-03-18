@@ -38,7 +38,7 @@ def main1():
     print(arg)
     
     embedding_filenames = sorted(os.listdir(arg.embedding_dir))
-    embedding_sizes = [100, 200, 50, 300] 
+    embedding_sizes = [300, 100, 200, 50, 300] 
     # prepare the dataset
     toxic_comments_dataset = ToxicCommentsDataset(arg.data_dir,
                                                   arg.train_csv_file,
@@ -94,7 +94,7 @@ def main2():
     print(arg)
 
     embedding_filenames = sorted(os.listdir(arg.embedding_dir))
-    embedding_sizes = [100, 200, 50, 300]
+    embedding_sizes = [300, 100, 200, 50, 300]
     # prepare the dataset
     toxic_comments_dataset = ToxicCommentsDataset(arg.data_dir,
                                                   arg.train_csv_file,
