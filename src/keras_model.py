@@ -13,6 +13,7 @@ parser.add_argument('--data_dir', default='', type=str, metavar='PATH', help='pa
 parser.add_argument('--output_dir', default='', type=str, metavar='PATH', help='path to model outputs (default: none)')
 parser.add_argument('--embedding_dir', default='', type=str, metavar='PATH', help='path to the pre-trained word embeddings (default: None)')
 parser.add_argument('--weights_filepath', default='', type=str, metavar='PATH', help='path to best weights saved (default: None)')
+parser.add_argument('--modelcheckpoint_filepath', default='weights.best.hdf5', type=str, metavar='PATH', help='path to checkpoint model weights')
 parser.add_argument('--train_csv_file', default='train.csv', type=str, metavar='PATH', help='train data filename')
 parser.add_argument('--test_csv_file', default='test.csv', type=str, metavar='PATH', help='test data filename')
 parser.add_argument('--new_x_train_file', default='new_x_train.out', type=str, metavar='PATH', help='processed train data filename')
@@ -57,8 +58,8 @@ def main1():
                                                                     train_size=arg.train_size, random_state=233)
 
     # create callbacks
-    checkpoint = ModelCheckpoint('weights2.best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-    early = EarlyStopping(monitor="val_acc", mode="max", patience=5)
+    checkpoint = ModelCheckpoint(arg.modelcheckpoint_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    early = EarlyStopping(monitor="val_acc", mode="max", patience=10)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                   patience=5, min_lr=0.001)
     roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval=1)
