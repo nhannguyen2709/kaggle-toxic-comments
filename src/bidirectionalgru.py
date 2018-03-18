@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tqdm import tqdm
+from gensim.models import KeyedVectors
 
 from keras.layers import Dense, Input, Bidirectional, Conv1D, GRU
 from keras.layers import Embedding
@@ -24,16 +25,13 @@ def create_embeddings(embedding_dir, embedding_filenames,
             f.close()
             list_embeddings_index.append(embedding_index)
         else:
-            embedding_index = {}
-            with open(os.path.join(embedding_dir, filename), mode='rb') as f:
-                for line in tqdm(f):
-                    values = line.rstrip().rsplit(' ')
-                    word = values[0]
-                    coefs = np.asarray(values[1:], dtype='float32')
-                    embedding_index[word] = coefs
-            f.close()
+            word_vectors = KeyedVectors.load_word2vec_format(filename, binary=False)
+            embedding_index = word_vectors.vocab
+            for word in embedding_index.keys():
+                embedding_index[word] = word_vectors.get_vector(word)
             list_embeddings_index.append(embedding_index)
-
+            del word_vectors 
+    
     list_embeddings_matrix = []
     for ix, embedding_size in enumerate(embedding_sizes):
         num_words = min(max_words, len(word_index) + 1)
@@ -45,8 +43,7 @@ def create_embeddings(embedding_dir, embedding_filenames,
             if embedding_vector is not None:
                 # words not found in embedding index will be all-zeros.
                 embedding_matrix[i] = embedding_vector
-        list_embeddings_matrix.append(embedding_matrix)
-    
+        list_embeddings_matrix.append(embedding_matrix)    
     del list_embeddings_index
 
     return list_embeddings_matrix

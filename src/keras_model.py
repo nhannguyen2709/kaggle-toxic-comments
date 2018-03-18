@@ -77,14 +77,14 @@ def main1():
         roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval=1)
         callbacks_list = [roc_auc, checkpoint, early, reduce_lr]
         bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
-                                        x_validation=x_validation, y_validation=y_validation,
-                                        learning_rate=arg.learning_rate, batch_size=arg.batch_size,
-                                        epochs=arg.epochs, callbacks_list=callbacks_list)
+                                           x_validation=x_validation, y_validation=y_validation,
+                                           learning_rate=arg.learning_rate, batch_size=arg.batch_size,
+                                           epochs=arg.epochs, callbacks_list=callbacks_list)
         # fine-tune the embedding layers
         bidirectionalgru.unfreeze_embeddings_and_train_all_layers(x_train=x_train, y_train=y_train,
-                                                                x_validation=x_validation, y_validation=y_validation,
-                                                                learning_rate=1e-5, batch_size=arg.batch_size,
-                                                                epochs=arg.epochs, callbacks_list=callbacks_list)
+                                                                  x_validation=x_validation, y_validation=y_validation,
+                                                                  learning_rate=1e-5, batch_size=arg.batch_size,
+                                                                  epochs=arg.epochs, callbacks_list=callbacks_list)
         bigru_preds = bidirectionalgru.predict_on_test_data(x_test=x_test)
         save_outputs(bigru_preds, arg.data_dir, arg.output_dir,
                      arg.train_csv_file, 'bigru_outputs'+str(i+1)+'.csv')
