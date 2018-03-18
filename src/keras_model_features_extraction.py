@@ -18,8 +18,6 @@ parser.add_argument('--embedding_dir', default='', type=str, metavar='PATH',
                     help='path to the pre-trained word embeddings (default: None)')
 parser.add_argument('--weights_filepath', default='', type=str,
                     metavar='PATH', help='path to best weights saved (default: None)')
-parser.add_argument('--modelcheckpoint_filepath', default='weights.best.hdf5',
-                    type=str, metavar='PATH', help='path to checkpoint model weights')
 parser.add_argument('--train_csv_file', default='train.csv',
                     type=str, metavar='PATH', help='train data filename')
 parser.add_argument('--test_csv_file', default='test.csv',
