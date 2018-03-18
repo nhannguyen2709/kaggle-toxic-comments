@@ -96,7 +96,7 @@ def main():
                                         recurrent_dropout_rate=arg.recurrent_dropout_rate,
                                         num_conv1d_filters=arg.num_conv1d_filters)
     bidirectionalgru.build_model()
-    if arg.reload:
+    if not arg.reload:
         bidirectionalgru.reload_weights_from_checkpoint()
 
     for i in range(arg.num_train_test_splits):
