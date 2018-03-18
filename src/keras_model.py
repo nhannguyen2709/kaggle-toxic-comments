@@ -29,6 +29,7 @@ parser.add_argument('--train_size', default=0.9, type=float, help='the proportio
 parser.add_argument('--learning_rate', default=1e-3, type=float, help='learning rate of the optimizer')
 parser.add_argument('--batch_size', default=256, type=int, metavar='N', help='number of samples in a batch')
 parser.add_argument('--epochs', default=15, type=int, metavar='N', help='number of training epochs')
+parser.add_argument('--num_train_test_splits', default=10, type=int, metavar='N', help='number of times to split the training set')
 parser.add_argument('--num_classes', default=6, type=int, metavar='N', help='number of labels')
 
 def main1():
@@ -76,19 +77,23 @@ def main1():
                                         num_conv1d_filters=arg.num_conv1d_filters)
     bidirectionalgru.build_model()
     bidirectionalgru.reload_weights_from_checkpoint()
-    bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
-                                       x_validation=x_validation, y_validation=y_validation,
-                                       learning_rate=arg.learning_rate, batch_size=arg.batch_size,
-                                       epochs=arg.epochs, callbacks_list=callbacks_list)
-    
-    # fine-tune the embedding layers
-    bidirectionalgru.unfreeze_embeddings_and_train_all_layers(x_train=x_train, y_train=y_train,
-                                                              x_validation=x_validation, y_validation=y_validation,
-                                                              learning_rate=1e-5, batch_size=arg.batch_size,
-                                                              epochs=arg.epochs, callbacks_list=callbacks_list)
-    bigru_preds = bidirectionalgru.predict_on_test_data(x_test=x_test)
-    save_outputs(bigru_preds, arg.data_dir, arg.output_dir,
-                 arg.train_csv_file, 'bigru_outputs.csv')  # save the outputs
+    for i in range(arg.num_train_test_splits):
+        print('Start training the model on split {}'.format(i + 1))
+        x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train,
+                                                                        train_size=arg.train_size, random_state=233)
+        bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
+                                        x_validation=x_validation, y_validation=y_validation,
+                                        learning_rate=arg.learning_rate, batch_size=arg.batch_size,
+                                        epochs=arg.epochs, callbacks_list=callbacks_list)
+        
+        # fine-tune the embedding layers
+        bidirectionalgru.unfreeze_embeddings_and_train_all_layers(x_train=x_train, y_train=y_train,
+                                                                x_validation=x_validation, y_validation=y_validation,
+                                                                learning_rate=1e-5, batch_size=arg.batch_size,
+                                                                epochs=arg.epochs, callbacks_list=callbacks_list)
+        bigru_preds = bidirectionalgru.predict_on_test_data(x_test=x_test)
+        save_outputs(bigru_preds, arg.data_dir, arg.output_dir,
+                    arg.train_csv_file, 'bigru_outputs'+str(i+1)+'.csv')
 def main2():
     global arg
     arg = parser.parse_args()
