@@ -54,17 +54,10 @@ def main1():
                                                max_words=arg.max_words,
                                                word_index=word_index)
     
-    # train-test split
-    x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, 
-                                                                    train_size=arg.train_size, random_state=233)
-
-    # create callbacks
     checkpoint = ModelCheckpoint(arg.modelcheckpoint_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     early = EarlyStopping(monitor="val_acc", mode="max", patience=10)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                   patience=5, min_lr=0.001)
-    roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval=1)
-    callbacks_list = [roc_auc, checkpoint, early, reduce_lr]
  
     bidirectionalgru = BidirectionalGRU(input_shape=(arg.maxlen,), 
                                         list_embeddings_matrix=list_embeddings_matrix,
@@ -80,12 +73,13 @@ def main1():
     for i in range(arg.num_train_test_splits):
         print('Start training the model on split {}'.format(i + 1))
         x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train,
-                                                                        train_size=arg.train_size, random_state=233)
+                                                                        train_size=arg.train_size, random_state=i)
+        roc_auc = RocAucEvaluation(validation_data=(x_validation, y_validation), interval=1)
+        callbacks_list = [roc_auc, checkpoint, early, reduce_lr]
         bidirectionalgru.train_last_layers(x_train=x_train, y_train=y_train,
                                         x_validation=x_validation, y_validation=y_validation,
                                         learning_rate=arg.learning_rate, batch_size=arg.batch_size,
                                         epochs=arg.epochs, callbacks_list=callbacks_list)
-        
         # fine-tune the embedding layers
         bidirectionalgru.unfreeze_embeddings_and_train_all_layers(x_train=x_train, y_train=y_train,
                                                                 x_validation=x_validation, y_validation=y_validation,
@@ -93,7 +87,7 @@ def main1():
                                                                 epochs=arg.epochs, callbacks_list=callbacks_list)
         bigru_preds = bidirectionalgru.predict_on_test_data(x_test=x_test)
         save_outputs(bigru_preds, arg.data_dir, arg.output_dir,
-                    arg.train_csv_file, 'bigru_outputs'+str(i+1)+'.csv')
+                     arg.train_csv_file, 'bigru_outputs'+str(i+1)+'.csv')
 def main2():
     global arg
     arg = parser.parse_args()
