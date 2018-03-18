@@ -25,7 +25,8 @@ def create_embeddings(embedding_dir, embedding_filenames,
             f.close()
             list_embeddings_index.append(embedding_index)
         else:
-            word_vectors = KeyedVectors.load_word2vec_format(filename, binary=False)
+            word_vectors = KeyedVectors.load_word2vec_format(
+                os.path.join(embedding_dir, filename), binary=False)
             embedding_index = word_vectors.vocab
             for word in embedding_index.keys():
                 embedding_index[word] = word_vectors.get_vector(word)
